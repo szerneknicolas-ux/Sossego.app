@@ -7,20 +7,27 @@
 <meta name="description" content="Um app em formato de joguinho para controlar a ansiedade em 5 minutos por dia. Entre na lista de acesso antecipado.">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 
+<!-- Meta Pixel Code -->
 <script>
-  /* ====== CONFIGURE AQUI ====== */
-  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzosNnFwGU30bH5pC1XA7DMGFV8Pepr78bltWxY_bNl1lTouS6x0MXdehmfzbgWvDXY/exec"; // URL do Google Apps Script
-  const PIXEL_ID  = "1798107711460802";        // ID do Pixel da Meta
-  /* ============================ */
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1798107711460802');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1798107711460802&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 
-  if (PIXEL_ID && !PIXEL_ID.startsWith("COLE")) {
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', PIXEL_ID); fbq('track', 'PageView');
-  }
+<script>
+  /* URL do Google Apps Script (planilha) */
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzosNnFwGU30bH5pC1XA7DMGFV8Pepr78bltWxY_bNl1lTouS6x0MXdehmfzbgWvDXY/exec";
   function track(ev){ try{ if(window.fbq) fbq('track', ev); }catch(e){} }
 </script>
 
@@ -89,7 +96,6 @@
 </style>
 </head>
 <body>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1798107711460802&ev=PageView&noscript=1"/></noscript>
 <main class="wrap">
   <div class="logo"><span></span>Sossego</div>
   <h1>Controle a ansiedade em <em>5 minutos por dia</em>, cuidando de um bichinho.</h1>
