@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sossego — controle a ansiedade cuidando de um bichinho</title>
+<meta name="description" content="Um app em formato de joguinho para controlar a ansiedade em 5 minutos por dia. Entre na lista de acesso antecipado.">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+<script>
+  /* ====== CONFIGURE AQUI ====== */
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzosNnFwGU30bH5pC1XA7DMGFV8Pepr78bltWxY_bNl1lTouS6x0MXdehmfzbgWvDXY/exec"; // URL do Google Apps Script
+  const PIXEL_ID  = "1798107711460802";        // ID do Pixel da Meta
+  /* ============================ */
+
+  if (PIXEL_ID && !PIXEL_ID.startsWith("COLE")) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', PIXEL_ID); fbq('track', 'PageView');
+  }
+  function track(ev){ try{ if(window.fbq) fbq('track', ev); }catch(e){} }
+</script>
+
+<style>
+  :root{
+    --bg:#F4F1EA; --card:#FFFFFF; --ink:#2B2A33; --muted:#6E6B78;
+    --brand:#5BAF8C; --brand-dark:#3F8E6D; --brand-soft:#E3F2EA;
+    --line:#E6E1D6; --accent:#F2B84B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+       min-height:100vh;display:flex;justify-content:center;padding:28px 16px 40px}
+  .wrap{width:100%;max-width:480px}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:900;font-size:22px;color:var(--brand-dark);margin-bottom:18px}
+  .logo span{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+  h1{font-size:28px;line-height:1.15;font-weight:900;letter-spacing:-.3px}
+  h1 em{font-style:normal;color:var(--brand-dark)}
+  .sub{color:var(--muted);font-size:16px;margin:10px 0 22px;line-height:1.45}
+  .card{background:var(--card);border-radius:24px;padding:22px 18px;box-shadow:0 6px 24px rgba(43,42,51,.07)}
+  .progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:18px}
+  .progress i{display:block;height:100%;width:25%;background:var(--brand);border-radius:6px;transition:width .35s}
+  .q{font-weight:800;font-size:19px;margin-bottom:14px}
+  .step{display:none;animation:in .3s ease}
+  .step.on{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .pets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .pet{border:2px solid var(--line);border-radius:18px;padding:12px 6px 10px;background:#fff;cursor:pointer;
+       text-align:center;font-family:inherit;color:inherit;transition:.2s}
+  .pet svg{width:100%;height:78px;display:block;margin-bottom:6px}
+  .pet b{display:block;font-size:15px}
+  .pet small{display:block;font-size:12px;color:var(--muted);line-height:1.25;margin-top:2px}
+  .pet:hover{border-color:var(--brand)}
+  .pet.sel{border-color:var(--brand);background:var(--brand-soft);transform:translateY(-2px)}
+  .pet .bob{animation:bob 2.6s ease-in-out infinite;transform-origin:center}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{border:2px solid var(--line);border-radius:14px;padding:14px;background:#fff;font:inherit;font-weight:700;
+       font-size:16px;text-align:left;cursor:pointer;color:inherit;transition:.15s}
+  .opt:hover,.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+
+  label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+  input[type=text],input[type=tel],input[type=email]{width:100%;padding:14px;border:2px solid var(--line);
+       border-radius:14px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}
+  input:focus{outline:none;border-color:var(--brand)}
+  .check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin-top:14px;font-weight:600}
+  .check input{margin-top:3px;accent-color:var(--brand)}
+
+  .btn{width:100%;margin-top:18px;padding:16px;border:0;border-radius:16px;background:var(--brand);color:#fff;
+       font:inherit;font-weight:900;font-size:17px;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--brand-dark)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--muted);margin-top:8px;font-weight:700}
+  .err{color:#C0473A;font-size:13px;font-weight:700;margin-top:8px;min-height:16px}
+
+  .done{text-align:center}
+  .done .big{font-size:44px}
+  .done h2{font-size:22px;font-weight:900;margin:6px 0}
+  .done p{color:var(--muted);line-height:1.45}
+  .offer{background:#FFF6E3;border:2px dashed var(--accent);border-radius:18px;padding:16px;margin-top:16px}
+  .offer .price{font-size:30px;font-weight:900;color:var(--ink)}
+  .offer .old{text-decoration:line-through;color:var(--muted);font-size:15px;margin-right:6px}
+
+  .foot{font-size:12px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1798107711460802&ev=PageView&noscript=1"/></noscript>
+<main class="wrap">
+  <div class="logo"><span></span>Sossego</div>
+  <h1>Controle a ansiedade em <em>5 minutos por dia</em>, cuidando de um bichinho.</h1>
+  <p class="sub">Um joguinho onde você ajuda seu bichinho a se acalmar — e aprende a se acalmar junto. Seja um dos primeiros a testar.</p>
+
+  <div class="card">
+    <div class="progress"><i id="bar"></i></div>
+
+    <!-- 1. Bichinho -->
+    <section class="step on" data-step="1">
+      <p class="q">Qual bichinho você escolheria?</p>
+      <div class="pets">
+        <button class="pet" data-v="Capivara">
+          <svg viewBox="0 0 100 80"><g class="bob">
+            <ellipse cx="52" cy="54" rx="34" ry="20" fill="#B98A5E"/>
+            <ellipse cx="32" cy="40" rx="20" ry="17" fill="#C99A6C"/>
+            <ellipse cx="22" cy="26" rx="5" ry="4" fill="#A47751"/>
+            <ellipse cx="38" cy="25" rx="5" ry="4" fill="#A47751"/>
+            <ellipse cx="18" cy="45" rx="9" ry="7" fill="#A47751"/>
+            <path d="M24 37q3 3 6 0M34 37q3 3 6 0" stroke="#2B2A33" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="15" cy="44" rx="1.8" ry="1.4" fill="#2B2A33"/>
+            <ellipse cx="22" cy="45" rx="3" ry="1.6" fill="#E8A3A0" opacity=".7"/>
+          </g></svg>
+          <b>Capi</b><small>a capivara de boa</small>
+        </button>
+        <button class="pet" data-v="Baiacu">
+          <svg viewBox="0 0 100 80"><g class="bob">
+            <g fill="#E8B23C">
+              <path d="M50 8l4 9h-8z"/><path d="M72 15l-1 10-7-6z"/><path d="M82 38l-9 4 1-9z"/>
+              <path d="M28 15l1 10 7-6z"/><path d="M18 38l9 4-1-9z"/><path d="M72 62l-8-5 9-3z"/><path d="M28 62l8-5-9-3z"/>
+            </g>
+            <circle cx="50" cy="40" r="26" fill="#F6CB55"/>
+            <ellipse cx="50" cy="50" rx="17" ry="11" fill="#FBE6A6"/>
+            <path d="M76 40l14-9v18z" fill="#E8B23C"/>
+            <circle cx="41" cy="35" r="3.2" fill="#2B2A33"/><circle cx="59" cy="35" r="3.2" fill="#2B2A33"/>
+            <ellipse cx="50" cy="45" rx="4" ry="3" fill="#2B2A33"/>
+          </g></svg>
+          <b>Bubi</b><small>o baiacu que incha</small>
+        </button>
+        <button class="pet" data-v="Nuvem">
+          <svg viewBox="0 0 100 80"><g class="bob">
+            <g fill="#DCEBF7">
+              <circle cx="34" cy="44" r="16"/><circle cx="52" cy="34" r="20"/><circle cx="70" cy="44" r="15"/>
+              <rect x="20" y="42" width="64" height="18" rx="9"/>
+            </g>
+            <path d="M42 44q3 3 6 0M54 44q3 3 6 0" stroke="#2B2A33" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M47 51q4 3 8 0" stroke="#2B2A33" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="50" r="3" fill="#F3B6B6" opacity=".7"/><circle cx="64" cy="50" r="3" fill="#F3B6B6" opacity=".7"/>
+          </g></svg>
+          <b>Nimbo</b><small>a nuvem que se acalma</small>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Momento -->
+    <section class="step" data-step="2">
+      <p class="q">Quando a mente mais acelera?</p>
+      <div class="opts" data-key="momento">
+        <button class="opt">🌙 Antes de dormir</button>
+        <button class="opt">💼 No trabalho ou nos estudos</button>
+        <button class="opt">👥 Em situações sociais</button>
+        <button class="opt">🔁 Praticamente o dia todo</button>
+      </div>
+    </section>
+
+    <!-- 3. Já tentou -->
+    <section class="step" data-step="3">
+      <p class="q">O que você já tentou pra aliviar?</p>
+      <div class="opts" data-key="tentou">
+        <button class="opt">🧘 Apps de meditação</button>
+        <button class="opt">🗣️ Terapia</button>
+        <button class="opt">📱 Vídeos e dicas na internet</button>
+        <button class="opt">🤷 Nada ainda</button>
+      </div>
+    </section>
+
+    <!-- 4. Contato -->
+    <section class="step" data-step="4">
+      <p class="q">Onde te avisamos quando abrir?</p>
+      <label for="nome">Seu nome</label>
+      <input id="nome" type="text" autocomplete="given-name" placeholder="Como podemos te chamar?">
+      <label for="whats">WhatsApp</label>
+      <input id="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(47) 99999-9999">
+      <label for="email">E-mail (opcional)</label>
+      <input id="email" type="email" autocomplete="email" placeholder="voce@email.com">
+      <label class="check"><input id="lgpd" type="checkbox"> Aceito receber contato sobre o Sossego. Seus dados não serão compartilhados.</label>
+      <p class="err" id="err"></p>
+      <button class="btn" id="send">Quero acesso antecipado</button>
+    </section>
+
+    <!-- 5. Oferta (teste de compra) -->
+    <section class="step done" data-step="5">
+      <div class="big">🎉</div>
+      <h2>Você está na lista, <span id="who"></span>!</h2>
+      <p>Seu bichinho já está te esperando.</p>
+      <div class="offer">
+        <p>O Sossego vai ser <b>gratuito</b> 💚</p>
+        <p style="margin-top:8px">Assim que abrir, você recebe o acesso antecipado direto no seu WhatsApp.</p>
+      </div>
+    </section>
+  </div>
+
+  <p class="foot">O Sossego é uma ferramenta de bem-estar e não substitui acompanhamento profissional.<br>Se estiver em sofrimento, ligue 188 (CVV), 24h e gratuito.</p>
+</main>
+
+<script>
+  const data = { id: Date.now().toString(36) + Math.random().toString(36).slice(2,6) };
+  const steps = [...document.querySelectorAll('.step')];
+  const bar = document.getElementById('bar');
+
+  function go(n){
+    steps.forEach(s => s.classList.toggle('on', +s.dataset.step === n));
+    bar.style.width = Math.min(n,4) * 25 + '%';
+  }
+
+  function send(evento){
+    if (!SHEET_URL || SHEET_URL.startsWith("COLE")) return;
+    const fd = new FormData();
+    Object.entries({...data, evento, data_hora: new Date().toLocaleString('pt-BR')})
+      .forEach(([k,v]) => fd.append(k, v));
+    fetch(SHEET_URL, { method:'POST', mode:'no-cors', body: fd }).catch(()=>{});
+  }
+
+  document.querySelectorAll('.pet').forEach(b => b.onclick = () => {
+    document.querySelectorAll('.pet').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel'); data.bichinho = b.dataset.v;
+    setTimeout(() => go(2), 280);
+  });
+
+  document.querySelectorAll('.opts').forEach(g => g.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    g.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel'); data[g.dataset.key] = b.textContent.replace(/^\S+\s/, '');
+    setTimeout(() => go(+g.closest('.step').dataset.step + 1), 250);
+  }));
+
+  document.getElementById('send').onclick = () => {
+    const nome = document.getElementById('nome').value.trim();
+    const whats = document.getElementById('whats').value.replace(/\D/g,'');
+    const email = document.getElementById('email').value.trim();
+    const err = document.getElementById('err');
+    if (!nome) return err.textContent = 'Digite seu nome.';
+    if (whats.length < 10) return err.textContent = 'Digite um WhatsApp válido com DDD.';
+    if (!document.getElementById('lgpd').checked) return err.textContent = 'Marque a caixinha para continuar.';
+    err.textContent = '';
+    Object.assign(data, { nome, whatsapp: whats, email });
+    send('cadastro'); track('Lead');
+    document.getElementById('who').textContent = nome.split(' ')[0];
+    go(5);
+  };
+
+</script>
+</body>
+</html>
